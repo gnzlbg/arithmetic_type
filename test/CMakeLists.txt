@@ -1,0 +1,1 @@
+add_arithmetic_type_test(all)
