@@ -23,8 +23,9 @@ b = a; // works: the implicit conversion is safe
 
 Arithmetic<int> a{2};
 Arithmetic<long> b{3};
-b = a; // compile error: implicit conversion
-b = Arithmetic<long>{a}; // works: explicit conversion
+b = a; // error: implicit assignment requires implicit conversion
+b = Arithmetic<long>{a};               // works: explicit construction
+b = static_cast<Arithmetic<long>>(a);  // works: explicit conversion
 ```
 
 ### Example 2: opaque type-defs
@@ -37,9 +38,19 @@ using Type1 = Arithmetic<int, Tag1>;
 using Type2 = Arithmetic<int, Tag2>;
 Type1 a{2};
 Type2 b{3};
-b = a; // compilation error: implicit conversion
-b = Type2{a}; // works: explicit conversion
+b = Type2{a};               // works: explicit construction
+b = static_cast<Type2>(a);  // works: explicit conversion
+Type2 c{a};                 // works: explicit construction
 ```
+
+### Other facilities
+- `to_string` function is provided in
+`arithmetic_type/arithmetic_to_string.hpp`
+- i/o stream operators are provided in
+`arithmetic_type/arithmetic_istream.hpp` and
+`arithmetic_type/arithmetic_ostream.hpp`
+- when writing generic code one sometimes need to deal with both `Arithmetic<T>`
+  and `T`. The function `primitive_cast(T t)` does the right thing.
 
 ### Dependencies:
 - C++11 compiler (currently tested with clang 3.5 only)

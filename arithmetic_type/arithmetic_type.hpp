@@ -1,11 +1,7 @@
 #ifndef BOOST_UTILITIES_ARITHMETIC_TYPE_ARITHMETIC_TYPE_
 #define BOOST_UTILITIES_ARITHMETIC_TYPE_ARITHMETIC_TYPE_
 ////////////////////////////////////////////////////////////////////////////////
-#include <algorithm>
 #include <limits>
-#include <iostream>
-#include <ostream>
-#include <string>
 #include <type_traits>
 ////////////////////////////////////////////////////////////////////////////////
 namespace boost {
@@ -16,17 +12,20 @@ namespace boost {
 /// \brief Implements an integer type
 template <class T, class B = void> struct Arithmetic {
   using value_type = T;
+  using type = T;
 
   /// \name Asignment operators
   ///@{
-  constexpr Arithmetic() noexcept : value(T{}) {}
-  constexpr Arithmetic(const Arithmetic& other) noexcept : value(other.value) {}
-  constexpr Arithmetic(Arithmetic&& other) noexcept : value(other.value) {}
-  constexpr explicit Arithmetic(const T& other) noexcept : value(other) {}
-
+  constexpr Arithmetic() noexcept(T{T{}}) : value{T{}} {}
+  constexpr Arithmetic(const Arithmetic& other) noexcept(T{T{}})
+    : value{other.value} {}
+  constexpr Arithmetic(Arithmetic&& other) noexcept(T{T{}})
+    : value{other.value} {}
+  constexpr explicit Arithmetic(const T& other) noexcept(T{T{}})
+    : value{other} {}
   template <class U, class V>
-  constexpr explicit Arithmetic(const Arithmetic<U, V>& other) noexcept
-      : value(other.value) {}
+  constexpr explicit Arithmetic(const Arithmetic<U, V>& other) noexcept(T{T{}})
+    : value(other.value) {}
 
   constexpr inline Arithmetic& operator=(const Arithmetic& other) noexcept {
     value = other.value;
@@ -44,7 +43,6 @@ template <class T, class B = void> struct Arithmetic {
 
   /// \name Conversion operators
   ///@{
-
   explicit constexpr inline operator T() noexcept { return value; }
   explicit constexpr inline operator const T() const noexcept { return value; }
 
@@ -57,7 +55,6 @@ template <class T, class B = void> struct Arithmetic {
   explicit constexpr inline operator const Arithmetic<U, V>() const noexcept {
     return value;
   }
-
   ///@}
 
   /// \name Compound assignment +=, -=, *=, /=
@@ -165,24 +162,15 @@ template <class T, class B = void> struct Arithmetic {
     swap(a.value, b.value);
   }
 
-  /// \brief to_string
-  friend inline std::string to_string(const Arithmetic a) {
-    return std::to_string(a.value);
-  }
-
   /// \name Access operator
   ///@{
-  constexpr inline T& operator()() noexcept { return value; }
-  constexpr inline T operator()() const noexcept { return value; }
+  constexpr inline T& operator()() & noexcept { return value; }
+  constexpr inline T operator()() && noexcept { return value; }
+  constexpr inline T operator()() const& noexcept { return value; }
   ///@}
 
+  /// Data (wrapped value):
   T value;
-
-  template <class C, class CT>
-  friend inline std::basic_ostream<C, CT>& operator<<(
-      std::basic_ostream<C, CT>& o, const Arithmetic<T, B>& i) {
-    return o << i();
-  }
 };
 ///@}
 

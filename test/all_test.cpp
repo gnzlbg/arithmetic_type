@@ -1,6 +1,9 @@
 /// \file Tests the Integer wrapper
 #include "arithmetic_type/arithmetic_type.hpp"
 #include "arithmetic_type/primitive_cast.hpp"
+#include "arithmetic_type/arithmetic_istream.hpp"
+#include "arithmetic_type/arithmetic_ostream.hpp"
+#include "arithmetic_type/arithmetic_to_string.hpp"
 #define CATCH_CONFIG_MAIN
 #include <catch.hpp>
 ////////////////////////////////////////////////////////////////////////////////
@@ -77,15 +80,20 @@ TEST_CASE("Test arithmetic type docs", "[arithmetic_type]") {
   }
 
   SECTION("Example 1b") {
-
     Arithmetic<int> a{2};
     Arithmetic<long> b{3};
-    // b = a; // compile error: implicit conversion
-    b = Arithmetic<long>{a};  // works: explicit conversion
+    // b = a;  // error: implicit assignment requires implicit conversion
+    static_assert(!std::is_assignable<Arithmetic<int>, Arithmetic<long>>::value,
+                  "implicit assignment not allowed");
+    static_assert(
+        !std::is_convertible<Arithmetic<int>, Arithmetic<long>>::value,
+        "implicit conversion not allowed");
+
+    b = Arithmetic<long>{a};               // works: explicit construction
+    b = static_cast<Arithmetic<long>>(a);  // works: explicit conversion
   }
 
   SECTION("Example 2") {
-
     struct Tag1 {};
     struct Tag2 {};
 
@@ -94,7 +102,13 @@ TEST_CASE("Test arithmetic type docs", "[arithmetic_type]") {
     Type1 a{2};
     Type2 b{3};
     // b = a; // compilation error: implicit conversion
-    b = Type2{a};  // works: explicit conversion
+    static_assert(!std::is_assignable<Type1, Type2>::value,
+                  "implicit assignment not allowed");
+    static_assert(!std::is_convertible<Type1, Type2>::value,
+                  "implicit conversion not allowed");
+    b = Type2{a};               // works: explicit construction
+    b = static_cast<Type2>(a);  // works: explicit conversion
+    Type2 c{a};                 // works: explicit construction
   }
 }
 
@@ -106,6 +120,7 @@ TEST_CASE("Test arithmetic type", "[arithmetic_type]") {
 
     /// Should be explicitly convertible to its underlying type
     long b = a();
+    b = static_cast<long>(a);
     long c = 2;
     REQUIRE(b == c);
     auto lambda = [](long i) { return i; };
@@ -118,9 +133,15 @@ TEST_CASE("Test arithmetic type", "[arithmetic_type]") {
     /// Should not implicitly convert to integer types of different families
     struct class1 {};
     struct class2 {};
-    auto e = Arithmetic<long, class1>{2};
-    auto f = Arithmetic<long, class2>{3};
+    using Type1 = Arithmetic<long, class1>;
+    using Type2 = Arithmetic<long, class2>;
+    auto e = Type1{2};
+    auto f = Type2{3};
     // e = f; // does not compile :)
+    static_assert(!std::is_assignable<Type1, Type2>::value,
+                  "implicit assignment not allowed");
+    static_assert(!std::is_convertible<Type1, Type2>::value,
+                  "implicit conversion not allowed");
     e = f();
   }
 
@@ -161,5 +182,13 @@ TEST_CASE("Test arithmetic type", "[arithmetic_type]") {
   SECTION("comparison_operators") {
     test_comparison_operators<Arithmetic<long>>();
     test_comparison_operators<Arithmetic<int>>();
+  }
+
+  SECTION("to string") {
+    using I = Arithmetic<int>;
+    using std::to_string;
+    auto i1 = I{1};
+    std::string rep("1");
+    REQUIRE(rep == to_string(i1));
   }
 }
