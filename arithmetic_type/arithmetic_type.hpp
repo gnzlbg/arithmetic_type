@@ -1,5 +1,5 @@
-#ifndef BOOST_UTILITIES_ARITHMETIC_TYPE_
-#define BOOST_UTILITIES_ARITHMETIC_TYPE_
+#ifndef BOOST_UTILITIES_ARITHMETIC_TYPE_ARITHMETIC_TYPE_
+#define BOOST_UTILITIES_ARITHMETIC_TYPE_ARITHMETIC_TYPE_
 ////////////////////////////////////////////////////////////////////////////////
 #include <algorithm>
 #include <limits>
@@ -24,6 +24,10 @@ template <class T, class B = void> struct Arithmetic {
   constexpr Arithmetic(Arithmetic&& other) noexcept : value(other.value) {}
   constexpr explicit Arithmetic(const T& other) noexcept : value(other) {}
 
+  template <class U, class V>
+  constexpr explicit Arithmetic(const Arithmetic<U, V>& other) noexcept
+      : value(other.value) {}
+
   constexpr inline Arithmetic& operator=(const Arithmetic& other) noexcept {
     value = other.value;
     return *this;
@@ -43,6 +47,16 @@ template <class T, class B = void> struct Arithmetic {
 
   explicit constexpr inline operator T() noexcept { return value; }
   explicit constexpr inline operator const T() const noexcept { return value; }
+
+  template <class U, class V>
+  explicit constexpr inline operator Arithmetic<U, V>() noexcept {
+    return value;
+  }
+
+  template <class U, class V>
+  explicit constexpr inline operator const Arithmetic<U, V>() const noexcept {
+    return value;
+  }
 
   ///@}
 
@@ -187,4 +201,4 @@ class numeric_limits<boost::Arithmetic<T, B>> : public numeric_limits<T> {
 }  // namespace std
 
 ////////////////////////////////////////////////////////////////////////////////
-#endif
+#endif  // BOOST_UTILITIES_ARITHMETIC_TYPE_ARITHMETIC_TYPE_

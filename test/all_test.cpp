@@ -68,6 +68,36 @@ template <class T> void test_unsigned_integer_arithmetic() {
   REQUIRE(i4 == i1);
 }
 
+TEST_CASE("Test arithmetic type docs", "[arithmetic_type]") {
+
+  SECTION("Example 1a") {
+    int a{2};
+    long b{3};
+    b = a;  // works: the implicit conversion is safe
+  }
+
+  SECTION("Example 1b") {
+
+    Arithmetic<int> a{2};
+    Arithmetic<long> b{3};
+    // b = a; // compile error: implicit conversion
+    b = Arithmetic<long>{a};  // works: explicit conversion
+  }
+
+  SECTION("Example 2") {
+
+    struct Tag1 {};
+    struct Tag2 {};
+
+    using Type1 = Arithmetic<int, Tag1>;
+    using Type2 = Arithmetic<int, Tag2>;
+    Type1 a{2};
+    Type2 b{3};
+    // b = a; // compilation error: implicit conversion
+    b = Type2{a};  // works: explicit conversion
+  }
+}
+
 TEST_CASE("Test arithmetic type", "[arithmetic_type]") {
 
   SECTION("Conversions") {
