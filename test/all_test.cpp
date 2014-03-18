@@ -8,7 +8,7 @@
 #include <catch.hpp>
 ////////////////////////////////////////////////////////////////////////////////
 
-using namespace boost;
+using namespace arithmetic;
 
 template <class T> void test_unsigned_integer_increment_operators() {
   auto i1 = T{1};

@@ -1,10 +1,10 @@
-#ifndef BOOST_UTILITIES_ARITHMETIC_TYPE_ARITHMETIC_TYPE_
-#define BOOST_UTILITIES_ARITHMETIC_TYPE_ARITHMETIC_TYPE_
+#ifndef ARITHMETIC_UTILITIES_ARITHMETIC_TYPE_ARITHMETIC_TYPE_
+#define ARITHMETIC_UTILITIES_ARITHMETIC_TYPE_ARITHMETIC_TYPE_
 ////////////////////////////////////////////////////////////////////////////////
 #include <limits>
 #include <type_traits>
 ////////////////////////////////////////////////////////////////////////////////
-namespace boost {
+namespace arithmetic {
 ////////////////////////////////////////////////////////////////////////////////
 
 /// \name Index types
@@ -110,6 +110,7 @@ template <class T, class B = void> struct Arithmetic {
 ///@}
 
 /// \brief swap
+/// \relates Arithmetic<T, U>
 template <class T, class U>
 constexpr void swap(Arithmetic<T, U>&& a, Arithmetic<T, U>&& b) noexcept {
   using std::swap;
@@ -117,6 +118,7 @@ constexpr void swap(Arithmetic<T, U>&& a, Arithmetic<T, U>&& b) noexcept {
 }
 
 /// \name Arithmetic operators +,-,*,/,unary -
+/// \relates Arithmetic<T, U>
 ///@{
 template <class T, class U>
 constexpr Arithmetic<T, U> operator+(Arithmetic<T, U> a,
@@ -147,6 +149,7 @@ constexpr Arithmetic<T, U> operator-(Arithmetic<T, U> const& other) noexcept {
 ///@}
 
 /// \name Comparison operators ==, !=, <, >, <=, >=
+/// \relates Arithmetic<T, U>
 ///@{
 template <class T, class U>
 constexpr bool operator==(const Arithmetic<T, U>& a,
@@ -181,18 +184,22 @@ constexpr bool operator>=(const Arithmetic<T, U>& a,
 ///@}
 
 ////////////////////////////////////////////////////////////////////////////////
-}  // namespace boost
+}  // namespace arithmetic
 ////////////////////////////////////////////////////////////////////////////////
 
+/// \name Arithmetic types are numeric types
+/// \relates Arithmetic<T, U>
+///@{
 namespace std {
 
 template <class T, class B>
-class numeric_limits<boost::Arithmetic<T, B>> : public numeric_limits<T> {
+class numeric_limits<arithmetic::Arithmetic<T, B>> : public numeric_limits<T> {
  public:
   static constexpr bool is_specialized = true;
 };
 
 }  // namespace std
+///@}
 
 ////////////////////////////////////////////////////////////////////////////////
-#endif  // BOOST_UTILITIES_ARITHMETIC_TYPE_ARITHMETIC_TYPE_
+#endif  // ARITHMETIC_UTILITIES_ARITHMETIC_TYPE_ARITHMETIC_TYPE_

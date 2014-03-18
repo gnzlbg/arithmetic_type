@@ -1,10 +1,10 @@
-#ifndef BOOST_UTILITIES_ARITHMETIC_TYPE_ARITHMETIC_TO_STRING_
-#define BOOST_UTILITIES_ARITHMETIC_TYPE_ARITHMETIC_TO_STRING_
+#ifndef ARITHMETIC_UTILITIES_ARITHMETIC_TYPE_ARITHMETIC_TO_STRING_
+#define ARITHMETIC_UTILITIES_ARITHMETIC_TYPE_ARITHMETIC_TO_STRING_
 ////////////////////////////////////////////////////////////////////////////////
 #include <string>
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace boost {
+namespace arithmetic {
 
 /// \brief to_string
 template<class T, class U>
@@ -12,7 +12,7 @@ inline std::string to_string(const Arithmetic<T, U> a) {
   return std::to_string(a());
 }
 
-}  // namespace boost
+}  // namespace arithmetic
 
 ////////////////////////////////////////////////////////////////////////////////
-#endif  // BOOST_UTILITIES_ARITHMETIC_TYPE_ARITHMETIC_TO_STRING_
+#endif  // ARITHMETIC_UTILITIES_ARITHMETIC_TYPE_ARITHMETIC_TO_STRING_

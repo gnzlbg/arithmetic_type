@@ -1,10 +1,10 @@
-#ifndef BOOST_UTILITIES_ARITHMETIC_TYPE_PRIMITIVE_CAST_
-#define BOOST_UTILITIES_ARITHMETIC_TYPE_PRIMITIVE_CAST_
+#ifndef ARITHMETIC_UTILITIES_ARITHMETIC_TYPE_PRIMITIVE_CAST_
+#define ARITHMETIC_UTILITIES_ARITHMETIC_TYPE_PRIMITIVE_CAST_
 ////////////////////////////////////////////////////////////////////////////////
 #include "arithmetic_type/traits.hpp"
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace boost {
+namespace arithmetic {
 
 namespace detail_ {
 enum class enabler {};
@@ -54,7 +54,7 @@ constexpr inline auto& primitive_cast(T& t) {
   return t;
 }
 
-}  // namespace boost
+}  // namespace arithmetic
 
 ////////////////////////////////////////////////////////////////////////////////
-#endif  // BOOST_UTILITIES_ARITHMETIC_TYPE_PRIMITIVE_CAST_
+#endif  // ARITHMETIC_UTILITIES_ARITHMETIC_TYPE_PRIMITIVE_CAST_
