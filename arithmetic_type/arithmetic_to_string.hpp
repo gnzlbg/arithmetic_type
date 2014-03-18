@@ -7,7 +7,7 @@
 namespace arithmetic {
 
 /// \brief to_string
-template<class T, class U>
+template <class T, class U>
 inline std::string to_string(const Arithmetic<T, U> a) {
   return std::to_string(a());
 }

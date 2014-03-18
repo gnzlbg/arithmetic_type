@@ -143,7 +143,6 @@ constexpr Arithmetic<T, U> operator/(Arithmetic<T, U> a,
 
 template <class T, class U>
 constexpr Arithmetic<T, U> operator-(Arithmetic<T, U> const& other) noexcept {
-  static_assert(std::is_signed<T>::value, "Can't negate an unsigned type!");
   return Arithmetic<T, U>{-other.value};
 }
 ///@}
