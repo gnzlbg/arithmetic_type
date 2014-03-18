@@ -2,17 +2,15 @@
 
 ### Provides
 
-`Arithmetic<T>` where `T` models the `Arithmetic` concept is a wrapper that
-disables _any_ implicit conversions between `T` and other types. 
-
-An `Arithmetic<T>` can be made opaque by passing it a unique tag as second
-template parameter `Arithmetic<T, unique_tag>`.
+`Arithmetic<T>` where `T` models the `Arithmetic` concept is a `T` wrapper that:
+- disables _any_ implicit conversions between `T` and other types, and 
+- can be made opaque by passing it a unique tag as second template parameter
+`Arithmetic<T, unique_tag>`.
 
 ### Why is this useful?
 
-It let's you define opaque typedefs for arithmetic types which can be explicitly
-convertible to each other. This allows to easily specify strongly typed
-interfaces when Arithmetic types are involved.
+It let's you easily specify strongly typed interfaces when Arithmetic types are
+involved!
 
 ### Example 1: disabling implicit conversions
 
@@ -23,7 +21,7 @@ b = a; // works: the implicit conversion is safe
 
 Arithmetic<int> a{2};
 Arithmetic<long> b{3};
-b = a; // error: implicit assignment requires implicit conversion
+b = a; // fails: implicit assignment requires implicit conversion
 b = Arithmetic<long>{a};               // works: explicit construction
 b = static_cast<Arithmetic<long>>(a);  // works: explicit conversion
 ```
@@ -38,10 +36,13 @@ using Type1 = Arithmetic<int, Tag1>;
 using Type2 = Arithmetic<int, Tag2>;
 Type1 a{2};
 Type2 b{3};
+a = b;  // fails: Type1 != Type2 even tho both wrap an int
 b = Type2{a};               // works: explicit construction
 b = static_cast<Type2>(a);  // works: explicit conversion
-Type2 c{a};                 // works: explicit construction
 ```
+
+See the [tests](https://github.com/gnzlbg/arithmetic_type/blob/master/test/all_test.cpp)
+for more examples.
 
 ### Other facilities
 - `to_string` function is provided in
@@ -53,7 +54,12 @@ Type2 c{a};                 // works: explicit construction
   and `T`. The function `primitive_cast(T t)` does the right thing.
 
 ### Dependencies:
-- C++11 compiler (currently tested with clang 3.5 only)
+- C++11/14 compiler (currently tested with clang 3.5 only)
 
 ### License
 - Boost Software License Version 1.0
+
+### Comparison with BOOST_STRONG_TYPEDEF
+
+`Arithmetic<T>` supports C++1y `constexpr`, move semantics, and disables
+implicit conversions.

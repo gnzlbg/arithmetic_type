@@ -179,7 +179,7 @@ TEST_CASE("Test arithmetic type", "[arithmetic_type]") {
     e = f();
   }
 
-  SECTION("primitive_cast]") {
+  SECTION("primitive_cast") {
     struct class1 {};
     using T1 = Arithmetic<long, class1>;
     struct class2 {};
@@ -192,7 +192,7 @@ TEST_CASE("Test arithmetic type", "[arithmetic_type]") {
     REQUIRE(a == T1{3});
   }
 
-  SECTION("compund_assignment]") {
+  SECTION("compund_assignment") {
     test_integer_compound_assignment<Arithmetic<long>>();
     test_integer_compound_assignment<Arithmetic<int>>();
   }
@@ -208,7 +208,7 @@ TEST_CASE("Test arithmetic type", "[arithmetic_type]") {
     REQUIRE(i3 == -i1);
   }
 
-  SECTION("integer_increment_operators]") {
+  SECTION("integer_increment_operators") {
     test_unsigned_integer_increment_operators<Arithmetic<long>>();
     test_unsigned_integer_increment_operators<Arithmetic<int>>();
   }
