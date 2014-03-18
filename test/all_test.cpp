@@ -71,8 +71,37 @@ template <class T> void test_unsigned_integer_arithmetic() {
   REQUIRE(i4 == i1);
 }
 
-TEST_CASE("Test arithmetic type docs", "[arithmetic_type]") {
+template <class T> void static_assert_noexcept_constructors() {
+  Arithmetic<T> a{};
+  const Arithmetic<T> b{};
+  static_assert(noexcept(Arithmetic<T>{}),
+                "error: arithmetic default constructor is noexcept(false)");
+  static_assert(noexcept(Arithmetic<T>{Arithmetic<T>{}}),
+                "error: arithmetic move constructor is noexcept(false)");
+  static_assert(noexcept(Arithmetic<T>{a}),
+                "error: arithmetic copy constructor is noexcept(false)");
+  static_assert(noexcept(Arithmetic<T>{b}),
+                "error: arithmetic copy constructor is noexcept(false)");
+  static_assert(noexcept(a = b),
+                "error: arithmetic copy assignment is noexcept(false)");
+  static_assert(noexcept(a = Arithmetic<T>{}),
+                "error: arithmetic move assignment is noexcept(false)");
+  static_assert(
+      noexcept(Arithmetic<long double>{a}),
+      "error: arithmetic generic copy constructor is noexcept(false)");
+}
 
+template <class T> constexpr Arithmetic<T> test_constexpr() {
+  Arithmetic<T> a{0};
+  a++;
+  ++a;
+  a *= Arithmetic<T>{2};
+  --a;
+  a--;
+  return a;
+}
+
+TEST_CASE("Test arithmetic type docs", "[arithmetic_type]") {
   SECTION("Example 1a") {
     int a{2};
     long b{3};
@@ -113,6 +142,11 @@ TEST_CASE("Test arithmetic type docs", "[arithmetic_type]") {
 }
 
 TEST_CASE("Test arithmetic type", "[arithmetic_type]") {
+
+  SECTION("Noexcept constructors") {
+    static_assert_noexcept_constructors<int>();
+    static_assert_noexcept_constructors<long>();
+  }
 
   SECTION("Conversions") {
     /// Should be constructible from its underlying type
@@ -190,5 +224,12 @@ TEST_CASE("Test arithmetic type", "[arithmetic_type]") {
     auto i1 = I{1};
     std::string rep("1");
     REQUIRE(rep == to_string(i1));
+  }
+
+  SECTION("test constexpr") {
+    constexpr Arithmetic<int> a{test_constexpr<int>()};
+    REQUIRE(a() == 2);
+    constexpr Arithmetic<long> b{test_constexpr<long>()};
+    REQUIRE(b() == 2);
   }
 }

@@ -16,26 +16,20 @@ template <class T, class B = void> struct Arithmetic {
 
   /// \name Asignment operators
   ///@{
-  constexpr Arithmetic() noexcept(T{T{}}) : value{T{}} {}
-  constexpr Arithmetic(const Arithmetic& other) noexcept(T{T{}})
-    : value{other.value} {}
-  constexpr Arithmetic(Arithmetic&& other) noexcept(T{T{}})
-    : value{other.value} {}
-  constexpr explicit Arithmetic(const T& other) noexcept(T{T{}})
+  constexpr Arithmetic() = default;
+  constexpr Arithmetic(const Arithmetic& other) = default;
+  constexpr Arithmetic(Arithmetic&& other) = default;
+  constexpr Arithmetic& operator=(const Arithmetic& other) = default;
+  constexpr Arithmetic& operator=(Arithmetic&& other) = default;
+
+  constexpr explicit Arithmetic(const T& other) noexcept(
+      std::is_nothrow_constructible<T>::value)
     : value{other} {}
   template <class U, class V>
-  constexpr explicit Arithmetic(const Arithmetic<U, V>& other) noexcept(T{T{}})
+  constexpr explicit Arithmetic(const Arithmetic<U, V>& other) noexcept(
+      std::is_nothrow_constructible<T>::value)
     : value(other.value) {}
-
-  constexpr inline Arithmetic& operator=(const Arithmetic& other) noexcept {
-    value = other.value;
-    return *this;
-  }
-  constexpr inline Arithmetic& operator=(Arithmetic&& other) noexcept {
-    value = other.value;
-    return *this;
-  }
-  constexpr inline Arithmetic& operator=(const T& other) noexcept {
+  constexpr Arithmetic& operator=(const T& other) noexcept {
     value = other;
     return *this;
   }
@@ -43,72 +37,47 @@ template <class T, class B = void> struct Arithmetic {
 
   /// \name Conversion operators
   ///@{
-  explicit constexpr inline operator T() noexcept { return value; }
-  explicit constexpr inline operator const T() const noexcept { return value; }
+  explicit constexpr operator T() noexcept { return value; }
+  explicit constexpr operator const T() const noexcept { return value; }
 
   template <class U, class V>
-  explicit constexpr inline operator Arithmetic<U, V>() noexcept {
+  explicit constexpr operator Arithmetic<U, V>() noexcept {
     return value;
   }
 
   template <class U, class V>
-  explicit constexpr inline operator const Arithmetic<U, V>() const noexcept {
+  explicit constexpr operator const Arithmetic<U, V>() const noexcept {
     return value;
   }
   ///@}
 
   /// \name Compound assignment +=, -=, *=, /=
   ///@{
-  constexpr inline Arithmetic& operator+=(const Arithmetic& other) noexcept {
+  constexpr Arithmetic& operator+=(const Arithmetic& other) noexcept {
     value += other.value;
     return *this;
   }
-  constexpr inline Arithmetic& operator-=(const Arithmetic& other) noexcept {
+  constexpr Arithmetic& operator-=(const Arithmetic& other) noexcept {
     value -= other.value;
     return *this;
   }
-  constexpr inline Arithmetic& operator*=(const Arithmetic& other) noexcept {
+  constexpr Arithmetic& operator*=(const Arithmetic& other) noexcept {
     value *= other.value;
     return *this;
   }
-  constexpr inline Arithmetic& operator/=(const Arithmetic& other) noexcept {
+  constexpr Arithmetic& operator/=(const Arithmetic& other) noexcept {
     value /= other.value;
     return *this;
   }
   ///@}
 
-  /// \name Arithmetic operators +,-,*,/,unary -
-  ///@{
-  constexpr friend inline Arithmetic operator+(Arithmetic a,
-                                               const Arithmetic& b) noexcept {
-    return a += b;
-  }
-  constexpr friend inline Arithmetic operator-(Arithmetic a,
-                                               const Arithmetic& b) noexcept {
-    return a -= b;
-  }
-  constexpr friend inline Arithmetic operator*(Arithmetic a,
-                                               const Arithmetic& b) noexcept {
-    return a *= b;
-  }
-  constexpr friend inline Arithmetic operator/(Arithmetic a,
-                                               const Arithmetic& b) noexcept {
-    return a /= b;
-  }
-
-  constexpr inline Arithmetic operator-() noexcept {
-    static_assert(std::is_signed<T>::value, "Can't negate an unsigned type!");
-    return Arithmetic{-value};
-  }
-  ///@}
-
   /// \name Prefix increment operators ++(),--()
   ///@{
-  constexpr inline Arithmetic& operator++() noexcept {
+  constexpr Arithmetic& operator++() noexcept {
     ++value;
     return *this;
   }
-  constexpr inline Arithmetic& operator--() noexcept {
+  constexpr Arithmetic& operator--() noexcept {
     --value;
     return *this;
   }
@@ -116,62 +85,99 @@ template <class T, class B = void> struct Arithmetic {
 
   /// \name Postfix increment operators ()++,()--
   ///@{
-  constexpr inline Arithmetic operator++(int) noexcept {
+  constexpr Arithmetic operator++(int) noexcept {
     Arithmetic tmp(*this);
     ++(*this);
     return tmp;
   }
-  constexpr inline Arithmetic operator--(int) noexcept {
+  constexpr Arithmetic operator--(int) noexcept {
     Arithmetic tmp(*this);
     --(*this);
     return tmp;
   }
   ///@}
 
-  /// \name Comparison operators ==, !=, <, >, <=, >=
-  ///@{
-  constexpr friend inline bool operator==(const Arithmetic& a,
-                                          const Arithmetic& b) noexcept {
-    return a.value == b.value;
-  }
-  constexpr friend inline bool operator<=(const Arithmetic& a,
-                                          const Arithmetic& b) noexcept {
-    return a.value <= b.value;
-  }
-  constexpr friend inline bool operator<(const Arithmetic& a,
-                                         const Arithmetic& b) noexcept {
-    return a.value < b.value;
-  }  // return a <= b && !(a == b) -> slower?
-  constexpr friend inline bool operator!=(const Arithmetic& a,
-                                          const Arithmetic& b) noexcept {
-    return !(a == b);
-  }
-  constexpr friend inline bool operator>(const Arithmetic& a,
-                                         const Arithmetic& b) noexcept {
-    return !(a <= b);
-  }
-  constexpr friend inline bool operator>=(const Arithmetic& a,
-                                          const Arithmetic& b) noexcept {
-    return !(a < b);
-  }
-  ///@}
-
-  /// \brief swap
-  constexpr friend inline void swap(Arithmetic&& a, Arithmetic&& b) noexcept {
-    using std::swap;
-    swap(a.value, b.value);
-  }
-
   /// \name Access operator
   ///@{
-  constexpr inline T& operator()() & noexcept { return value; }
-  constexpr inline T operator()() && noexcept { return value; }
-  constexpr inline T operator()() const& noexcept { return value; }
+  constexpr T& operator()() & noexcept { return value; }
+  constexpr T operator()() && noexcept { return value; }
+  constexpr T operator()() const& noexcept { return value; }
   ///@}
 
   /// Data (wrapped value):
   T value;
 };
+///@}
+
+/// \brief swap
+template <class T, class U>
+constexpr void swap(Arithmetic<T, U>&& a, Arithmetic<T, U>&& b) noexcept {
+  using std::swap;
+  swap(a.value, b.value);
+}
+
+/// \name Arithmetic operators +,-,*,/,unary -
+///@{
+template <class T, class U>
+constexpr Arithmetic<T, U> operator+(Arithmetic<T, U> a,
+                                     const Arithmetic<T, U>& b) noexcept {
+  return a += b;
+}
+template <class T, class U>
+constexpr Arithmetic<T, U> operator-(Arithmetic<T, U> a,
+                                     const Arithmetic<T, U>& b) noexcept {
+  return a -= b;
+}
+template <class T, class U>
+constexpr Arithmetic<T, U> operator*(Arithmetic<T, U> a,
+                                     const Arithmetic<T, U>& b) noexcept {
+  return a *= b;
+}
+template <class T, class U>
+constexpr Arithmetic<T, U> operator/(Arithmetic<T, U> a,
+                                     const Arithmetic<T, U>& b) noexcept {
+  return a /= b;
+}
+
+template <class T, class U>
+constexpr Arithmetic<T, U> operator-(Arithmetic<T, U> const& other) noexcept {
+  static_assert(std::is_signed<T>::value, "Can't negate an unsigned type!");
+  return Arithmetic<T, U>{-other.value};
+}
+///@}
+
+/// \name Comparison operators ==, !=, <, >, <=, >=
+///@{
+template <class T, class U>
+constexpr bool operator==(const Arithmetic<T, U>& a,
+                          const Arithmetic<T, U>& b) noexcept {
+  return a.value == b.value;
+}
+template <class T, class U>
+constexpr bool operator<(const Arithmetic<T, U>& a,
+                         const Arithmetic<T, U>& b) noexcept {
+  return a.value < b.value;
+}
+template <class T, class U>
+constexpr bool operator<=(const Arithmetic<T, U>& a,
+                          const Arithmetic<T, U>& b) noexcept {
+  return a < b || a == b;
+}
+template <class T, class U>
+constexpr bool operator!=(const Arithmetic<T, U>& a,
+                          const Arithmetic<T, U>& b) noexcept {
+  return !(a == b);
+}
+template <class T, class U>
+constexpr bool operator>(const Arithmetic<T, U>& a,
+                         const Arithmetic<T, U>& b) noexcept {
+  return !(a <= b);
+}
+template <class T, class U>
+constexpr bool operator>=(const Arithmetic<T, U>& a,
+                          const Arithmetic<T, U>& b) noexcept {
+  return !(a < b);
+}
 ///@}
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -183,7 +189,7 @@ namespace std {
 template <class T, class B>
 class numeric_limits<boost::Arithmetic<T, B>> : public numeric_limits<T> {
  public:
-  static const bool is_specialized = true;
+  static constexpr bool is_specialized = true;
 };
 
 }  // namespace std
