@@ -2,21 +2,10 @@
 #define ARITHMETIC_UTILITIES_ARITHMETIC_TYPE_PRIMITIVE_CAST_
 ////////////////////////////////////////////////////////////////////////////////
 #include "arithmetic_type/traits.hpp"
+#include "arithmetic_type/enable_if.hpp"
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace arithmetic {
-
-namespace detail_ {
-enum class enabler {};
-constexpr enabler dummy = {};
-
-template <class C, class T = enabler>
-using EnableIf = std::enable_if_t<C::value, T>;
-
-template <class C, class T = enabler>
-using DisableIf = std::enable_if_t<!(C::value), T>;
-
-}  // namespace detail_
 
 template <class T, detail_::EnableIf<is_arithmetic<T>> = detail_::dummy>
 constexpr inline auto&& primitive_cast(T&& t) {

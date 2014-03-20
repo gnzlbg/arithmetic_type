@@ -232,4 +232,17 @@ TEST_CASE("Test arithmetic type", "[arithmetic_type]") {
     constexpr Arithmetic<long> b{test_constexpr<long>()};
     REQUIRE(b() == 2);
   }
+
+  SECTION("pointer arithmetic") {
+    int a[5] = {0, 1, 2, 3, 4};
+    int* ap = &a[0];
+    using Iint = Arithmetic<int>;
+    using Ilong = Arithmetic<long>;
+    auto i1 = Iint{1};
+    auto i4 = Ilong{4};
+    auto v1 = *(ap + i1);
+    auto v4 = *(ap + i4);
+    REQUIRE(v1 == 1);
+    REQUIRE(v4 == 4);
+  }
 }

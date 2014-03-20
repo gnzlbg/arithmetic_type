@@ -3,6 +3,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <limits>
 #include <type_traits>
+#include "returns.hpp"
+#include "enable_if.hpp"
 ////////////////////////////////////////////////////////////////////////////////
 namespace arithmetic {
 ////////////////////////////////////////////////////////////////////////////////
@@ -180,6 +182,31 @@ constexpr bool operator>=(const Arithmetic<T, U>& a,
                           const Arithmetic<T, U>& b) noexcept {
   return !(a < b);
 }
+///@}
+
+/// \name Pointer arithmetic
+///@{
+
+template<class T, class U, class V,
+         detail_::EnableIf<std::is_pointer<T>> = detail_::dummy>
+constexpr auto operator+(T a, const Arithmetic<U, V>& i)
+RETURNS(a + i());
+
+template<class T, class U, class V,
+         detail_::EnableIf<std::is_array<T>> = detail_::dummy>
+constexpr auto operator+(T a, const Arithmetic<U, V>& i)
+RETURNS(a + i());
+
+template<class T, class U, class V,
+         detail_::EnableIf<std::is_pointer<T>> = detail_::dummy>
+constexpr auto operator-(T a, const Arithmetic<U, V>& i)
+RETURNS(a - i());
+
+template<class T, class U, class V,
+         detail_::EnableIf<std::is_array<T>> = detail_::dummy>
+constexpr auto operator-(T a, const Arithmetic<U, V>& i)
+RETURNS(a - i());
+
 ///@}
 
 ////////////////////////////////////////////////////////////////////////////////
